@@ -6,7 +6,7 @@ const PostQueries = {
     var query =
       "insert into " +
       shared.dbName +
-      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,userId) values (?,?,?,?,?,?,?,?)";
+      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,postTypes,userId) values (?,?,?,?,?,?,?,?,?)";
 
     var values = [
       new Date().toISOString(),
@@ -16,6 +16,7 @@ const PostQueries = {
       0,
       params.content,
       params.location,
+      params.postTypes,
       params.userId,
     ];
 
@@ -91,14 +92,18 @@ const PostQueries = {
     }
   },
 
-  like: async (isLike, params) => {
+  like: async (args, params) => {
+    var temp_str = "";
+
+    if (args.isLike) {
+      temp_str = "numOfLikes + 1 ";
+    } else {
+      temp_str = "numOfLikes - 1 ";
+    }
     var query =
       "update " +
       shared.dbName +
-      ".Posts set numOfLikes = numOfLikes + " +
-      isLike
-        ? 1
-        : -1 + " where ?";
+      `.Posts set numOfLikes = IF(${temp_str} < 1,0,${temp_str}) where ?`;
 
     const update_query_res = await DataAccessLayer.ExcuteCommand(query, [
       params.condition,
@@ -118,23 +123,53 @@ const PostQueries = {
         errors: [params.condition.id + " " + "not exists"],
       };
     } else if (update_query_res) {
+      if (args.isLike) {
+        var query =
+          "INSERT INTO  " +
+          shared.dbName +
+          `.UserLikePost (userId,postId)  values (?,?)`;
+
+        await DataAccessLayer.ExcuteCommand(query, [
+          args.userId,
+          params.condition.id,
+        ]);
+      } else {
+        var query =
+          "delete from " +
+          shared.dbName +
+          `.UserLikePost where userId = ? and postId  = ?`;
+
+        await DataAccessLayer.ExcuteCommand(query, [
+          args.userId,
+          params.condition.id,
+        ]);
+      }
+
       return { success: true, message: "Post updated successful" };
     }
   },
 
-  retrieve: async (page, perPage, params) => {
+  retrieve: async (page, perPage, userId, params) => {
     var condition = "";
     var values = [];
 
+    values.push(userId);
+
     if (Object.keys(params).length > 0) {
       condition = " WHERE ?";
-      values = [params];
+      if ("conditionUserId" in params) {
+        params["p.userId"] = params.conditionUserId;
+
+        delete params.conditionUserId;
+      }
+      values.push(params);
     }
 
     const offset = (page - 1) * perPage;
     const limit = perPage;
 
-    var query = `SELECT * from ${shared.dbName}.Posts ${condition} ORDER BY createdDateTime DESC, id DESC LIMIT ? OFFSET ?`;
+    var query = `SELECT p.*, IF(pl.userId IS NOT NULL, true, false) AS isLikedByMe from ${shared.dbName}.Posts p LEFT JOIN UserLikePost pl ON p.id = pl.postId AND pl.userId = ? 
+                ${condition} ORDER BY createdDateTime DESC, id DESC LIMIT ? OFFSET ?`;
 
     values.push(limit);
     values.push(offset);

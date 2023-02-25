@@ -36,18 +36,20 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(Post.Type),
       args: {
         id: { type: GraphQLInt },
-        userId: { type: GraphQLString },
+        conditionUserId: { type: GraphQLInt },
+        userId: { type: GraphQLInt },
         page: { type: new GraphQLNonNull(GraphQLInt) },
         perPage: { type: new GraphQLNonNull(GraphQLInt) },
         postTypes: { type: GraphQLInt },
       },
       async resolve(root, args) {
         console.log("Get Posts");
-        const { page, perPage, ...postFilters } = args;
+        const { page, perPage, userId, ...postFilters } = args;
 
         const result = await PostLogic.Queries.retrieve(
           page,
           perPage,
+          userId,
           postFilters
         );
 
@@ -58,7 +60,7 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(Comment.Type),
       args: {
         id: { type: GraphQLInt },
-        postId: { type: GraphQLString },
+        postId: { type: GraphQLInt },
         page: { type: new GraphQLNonNull(GraphQLInt) },
         perPage: { type: new GraphQLNonNull(GraphQLInt) },
       },
@@ -152,6 +154,7 @@ const Mutation = new GraphQLObjectType({
       type: Post.ResultType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
+        userId: { type: new GraphQLNonNull(GraphQLInt) },
         isLike: { type: new GraphQLNonNull(GraphQLBoolean) },
       },
       async resolve(root, args) {
@@ -160,7 +163,7 @@ const Mutation = new GraphQLObjectType({
         };
 
         console.log(`${args.isLike ? "Like" : "Unlike"} Post`);
-        const result = await PostLogic.Queries.like(req);
+        const result = await PostLogic.Queries.like(args, req);
         return result;
       },
     },

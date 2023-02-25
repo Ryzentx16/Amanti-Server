@@ -20,6 +20,7 @@ const User = {
       profileImage: { type: GraphQLString },
       phoneNumber: { type: GraphQLString },
       isOtpChecked: { type: GraphQLBoolean },
+      roleLvl: { type: GraphQLInt },
     }),
   }),
 

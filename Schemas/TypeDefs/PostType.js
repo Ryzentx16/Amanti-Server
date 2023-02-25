@@ -25,6 +25,7 @@ var Post = {
       location: { type: GraphQLString },
       image: { type: GraphQLString },
       postTypes: { type: GraphQLInt },
+      isLikedByMe: { type: GraphQLBoolean },
       user: {
         type: User.Type,
         resolve: async (parent, args) => {

@@ -71,9 +71,10 @@ app.post("/upload", Uploader.upload.single("image"), (req, res) => {
 
 app.get("/download/*", (req, res) => {
   const filePath = req.params[0];
-  const absolutePath = path.join(__dirname, filePath);
+  var absolutePath = path.join(__dirname, filePath);
 
-  console.log(absolutePath);
+  absolutePath = absolutePath.replace(/(\.\w+)$/, '_comp$1')
+
   res.download(`${absolutePath}`, (err) => {
     if (err) {
       console.log("Error in download: ", err);

@@ -37,6 +37,13 @@ const CommentQueries = {
         errors: [params.userId + " " + "not exists"],
       };
     } else if (add_comment_query_res) {
+      var query =
+        "update " +
+        shared.dbName +
+        `.Posts set numOfComments = numOfComments + 1 where ?`;
+
+      await DataAccessLayer.ExcuteCommand(query, [{ id: params.postId }]);
+
       return { success: true, message: "Comment created successful" };
     }
   },
@@ -94,18 +101,22 @@ const CommentQueries = {
     const offset = (page - 1) * perPage;
     const limit = perPage;
 
-    var query = `SELECT * from ${shared.dbName}.Comments WHERE replyId is null ORDER BY createdDateTime DESC, id DESC LIMIT ? OFFSET ?`;
+    var query = `SELECT * from ${shared.dbName}.Comments WHERE replyId is null and ? ORDER BY createdDateTime DESC, id DESC LIMIT ? OFFSET ?`;
 
-    var values = [limit, offset];
-    values.push(limit);
-    values.push(offset);
+    var values = [{ postId: params.postId }, limit, offset];
 
-    const get_post_query_res = await DataAccessLayer.SelectData(query, values);
+    const get_comments_query_res = await DataAccessLayer.SelectData(
+      query,
+      values
+    );
 
-    if (get_post_query_res.name === "Error" || !get_post_query_res) {
+    if (
+      get_comments_query_res == null ||
+      get_comments_query_res.name === "Error"
+    ) {
       return null;
-    } else if (get_post_query_res) {
-      return get_post_query_res;
+    } else if (get_comments_query_res) {
+      return get_comments_query_res;
     }
   },
 };
