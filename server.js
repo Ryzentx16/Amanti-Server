@@ -85,9 +85,9 @@ app.get("/download/*", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  console.log("Welcome to the server");
+  console.log("Welcome to the Akhlaqana server");
 
-  res.send("Welcome to the server");
+  res.send("Welcome to the Akhlaqana server");
 });
 
 app.use(
