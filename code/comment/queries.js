@@ -11,7 +11,7 @@ const CommentQueries = {
     var values = [
       params.content,
       0,
-      params.image ? params.image : "",
+      params.image ? params.image : null,
       params.userId,
       params.postId,
       params.replyId ? params.replyId : null,
