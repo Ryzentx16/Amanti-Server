@@ -2,9 +2,9 @@
   "name": "amanti_server",
   "version": "1.0.0",
   "description": "Server That connect to mySql database",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ryzentx",

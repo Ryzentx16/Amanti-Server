@@ -27,7 +27,7 @@ const RootQuery = new GraphQLObjectType({
         password: { type: GraphQLString },
       },
       async resolve(root, args) {
-        console.log("Get Userss");
+        console.log("Get Users");
         const result = await UserLogic.Queries.retrieve(args);
         return result;
       },

@@ -8,7 +8,6 @@ const Uploader = require("./code/utils/uploader");
 const path = require("path");
 
 const app = express();
-const PORT = 2000;
 
 //enable cross origin request
 const corsConfig = {
@@ -73,7 +72,7 @@ app.get("/download/*", (req, res) => {
   const filePath = req.params[0];
   var absolutePath = path.join(__dirname, filePath);
 
-  absolutePath = absolutePath.replace(/(\.\w+)$/, '_comp$1')
+  absolutePath = absolutePath.replace(/(\.\w+)$/, "_comp$1");
 
   res.download(`${absolutePath}`, (err) => {
     if (err) {
@@ -85,6 +84,12 @@ app.get("/download/*", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  console.log("Welcome to the server");
+
+  res.send("Welcome to the server");
+});
+
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -93,6 +98,8 @@ app.use(
   })
 );
 
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, (_) => {
   console.log("server running on port " + PORT);
 });

@@ -184,7 +184,7 @@ const UserQueries = {
 
     const get_user_query_res = await DataAccessLayer.SelectData(query, values);
 
-    if ( get_user_query_res == null || get_user_query_res.name === "Error") {
+    if (get_user_query_res == null || get_user_query_res.name === "Error") {
       return null;
     } else if (get_user_query_res) {
       var passwordComparator = null;

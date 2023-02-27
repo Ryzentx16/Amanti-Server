@@ -6,10 +6,9 @@ const CommentQueries = {
     var query =
       "insert into " +
       shared.dbName +
-      ".Comments (createdDateTime,content,numOfLikes,image,userId,postId,replyId) values (?,?,?,?,?,?,?)";
+      ".Comments (createdDateTime,content,numOfLikes,image,userId,postId,replyId) values (DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),?,?,?,?,?,?)";
 
     var values = [
-      new Date().toISOString(),
       params.content,
       0,
       params.image ? params.image : "",

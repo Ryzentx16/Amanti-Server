@@ -2,10 +2,11 @@ const mysql = require("mysql");
 
 // create a connection to the database
 const connection = mysql.createPool({
-  host: "sql876.main-hosting.eu",
-  user: "u138139769_ryzentx",
-  password: "Abdo@12m",
-  database: "u138139769_akhlaquna",
+  host: "35.188.223.211",
+  user: "root",
+  password: "Amanti_2023#",
+  database: "akhlaqunaDB",
+  //socketPath: "/cloudsql/akhlaqna-competition:us-central1:amanti2023",
 });
 
 async function makeQuery(query) {

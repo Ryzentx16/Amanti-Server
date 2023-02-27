@@ -6,10 +6,9 @@ const PostQueries = {
     var query =
       "insert into " +
       shared.dbName +
-      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,postTypes,userId) values (?,?,?,?,?,?,?,?,?)";
+      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,postTypes,userId) values (DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),?,?,?,?,?,?,?,?)";
 
     var values = [
-      new Date().toISOString(),
       params.image ? params.image : null,
       0,
       0,
@@ -24,6 +23,8 @@ const PostQueries = {
       query,
       values
     );
+
+    console.log(add_post_query_res);
 
     if (add_post_query_res.name === "Error") {
       return {

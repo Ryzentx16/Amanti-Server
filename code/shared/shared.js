@@ -1,5 +1,5 @@
 const shared = {
-  dbName: "u138139769_akhlaquna",
+  dbName: "akhlaqunaDB",
 };
 
 module.exports = shared;
