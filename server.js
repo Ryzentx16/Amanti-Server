@@ -77,7 +77,6 @@ app.get("/download/*", (req, res) => {
   res.download(`${absolutePath}`, (err) => {
     if (err) {
       console.log("Error in download: ", err);
-      console.log(absolutePath);
       return res.status(500).send("Error downloading image");
     } else {
       console.log("image downloaded successfully");
