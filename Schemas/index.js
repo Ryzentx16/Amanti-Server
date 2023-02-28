@@ -12,9 +12,15 @@ const {
 const User = require("./TypeDefs/UserType");
 const Post = require("./TypeDefs/PostType");
 const Comment = require("./TypeDefs/CommentType");
+const ChatRoom = require("./TypeDefs/ChatRoomsType");
+const ChatMessage = require("./TypeDefs/ChatMessageType");
 const UserLogic = require("../code/user");
 const PostLogic = require("../code/post");
 const CommentLogic = require("../code/comment");
+const {
+  ChatRoom: ChatRoomLogic,
+  ChatMessage: ChatMessageLogic,
+} = require("../code/chat");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -73,6 +79,48 @@ const RootQuery = new GraphQLObjectType({
           perPage,
           postFilters
         );
+        return result;
+      },
+    },
+    chatRoom: {
+      type: new GraphQLList(ChatRoom.Type),
+      args: {
+        id: { type: GraphQLInt },
+        userId: { type: GraphQLInt },
+        page: { type: new GraphQLNonNull(GraphQLInt) },
+        perPage: { type: new GraphQLNonNull(GraphQLInt) },
+      },
+      async resolve(root, args) {
+        console.log("Get Chat rooms");
+        const { page, perPage, ...postFilters } = args;
+
+        const result = await ChatRoomLogic.Queries.retrieve(
+          page,
+          perPage,
+          postFilters
+        );
+
+        return result;
+      },
+    },
+    chatMessage: {
+      type: new GraphQLList(ChatMessage.Type),
+      args: {
+        id: { type: GraphQLInt },
+        chatRoomId: { type: GraphQLInt },
+        page: { type: new GraphQLNonNull(GraphQLInt) },
+        perPage: { type: new GraphQLNonNull(GraphQLInt) },
+      },
+      async resolve(root, args) {
+        console.log("Get Chat messages");
+        const { page, perPage, ...postFilters } = args;
+
+        const result = await ChatMessageLogic.Queries.retrieve(
+          page,
+          perPage,
+          postFilters
+        );
+
         return result;
       },
     },
@@ -215,6 +263,29 @@ const Mutation = new GraphQLObjectType({
       async resolve(root, args) {
         console.log("Delete Comment");
         const result = await CommentLogic.Queries.delete(args);
+        return result;
+      },
+    },
+
+    addChatRoom: {
+      type: ChatRoom.ResultType,
+      args: {
+        input: { type: new GraphQLNonNull(ChatRoom.InputTypes.Add) },
+      },
+      async resolve(root, args) {
+        console.log("Add Chat Room");
+        const result = await ChatRoomLogic.Queries.create(args.input);
+        return result;
+      },
+    },
+    deleteComment: {
+      type: Comment.ResultType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLInt) },
+      },
+      async resolve(root, args) {
+        console.log("Delete Chat Room");
+        const result = await ChatRoomLogic.Queries.delete(args);
         return result;
       },
     },

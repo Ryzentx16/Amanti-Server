@@ -24,8 +24,6 @@ const PostQueries = {
       values
     );
 
-    console.log(add_post_query_res);
-
     if (add_post_query_res.name === "Error") {
       return {
         success: false,

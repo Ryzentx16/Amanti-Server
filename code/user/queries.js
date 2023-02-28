@@ -54,7 +54,7 @@ const UserQueries = {
       params.firstName,
       params.lastName,
       params.password,
-      "",
+      "uploads/user/default.png",
       0,
       params.phoneNumber,
     ];

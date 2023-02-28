@@ -6,8 +6,12 @@ const { graphqlHTTP } = require("express-graphql");
 const schema = require("./Schemas");
 const Uploader = require("./code/utils/uploader");
 const path = require("path");
+const { ChatMessage } = require("./code/chat");
 
 const app = express();
+
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
 
 //enable cross origin request
 const corsConfig = {
@@ -36,6 +40,44 @@ app.use(function (req, res, next) {
 //Parses Request Body - TO DO LOOK INTO TWO BODY PARSER EFFECT
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+io.on("connection", (socket) => {
+  // get the user ID from the client-side
+  const userId = socket.handshake.query.userId;
+
+  socket.on("subscribe", (params) => {
+    console.log("subscribe");
+    socket.join(params.id);
+  });
+
+  socket.on("unsubscribe", (params) => {
+    console.log("unsubscribe");
+    socket.leave(params.id);
+  });
+
+  // listen for incoming messages
+  socket.on("chat message", (params) => {
+    console.log("chat message");
+    io.to(params.roomId).emit("chat message", {
+      userId: userId,
+      message: params,
+    });
+
+    ChatMessage.Queries.create(params).then((result) => {
+      // if (result.success) {
+      //   io.to(params.roomId).emit("chat message", {
+      //     userId: userId,
+      //     message: params,
+      //   });
+      // } else {
+      //   io.to(params.roomId).emit("chat message", {
+      //     userId: userId,
+      //     message: null,
+      //   });
+      // }
+    });
+  });
+});
 
 app.post("/upload", Uploader.upload.single("image"), (req, res) => {
   const characters = "abcdefghijklmnopqrstuvwxyz0123456789_";
@@ -69,12 +111,10 @@ app.post("/upload", Uploader.upload.single("image"), (req, res) => {
 });
 
 app.get("/download/*", (req, res) => {
-  const filePath = req.params[0];
-  var absolutePath = path.join(__dirname, filePath);
+  var filePath = req.params[0];
+  filePath = filePath.replace(/(\.\w+)$/, "_comp$1");
 
-  absolutePath = absolutePath.replace(/(\.\w+)$/, "_comp$1");
-
-  res.download(`${absolutePath}`, (err) => {
+  res.download(`./${filePath}`, (err) => {
     if (err) {
       console.log("Error in download: ", err);
       return res.status(500).send("Error downloading image");
@@ -100,6 +140,6 @@ app.use(
 
 const PORT = process.env.PORT || 2000;
 
-app.listen(PORT, (_) => {
+server.listen(PORT, (_) => {
   console.log("server running on port " + PORT);
 });

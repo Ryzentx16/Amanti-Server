@@ -28,6 +28,7 @@
     "password-validator": "^5.0.3",
     "session-file-store": "^1.5.0",
     "sharp": "^0.31.3",
+    "socket.io": "^4.6.1",
     "ssn-validator": "^2.0.1",
     "time-calculate": "0.0.1",
     "validate-phone-number-node-js": "0.0.1",
