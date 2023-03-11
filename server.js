@@ -98,7 +98,7 @@ app.post("/upload", Uploader.upload.single("image"), (req, res) => {
   const params = {
     image: image,
     imageName: imageName,
-    uploadPath: "/uploads/" + typeName,
+    uploadPath: "uploads/" + typeName,
   };
 
   if (isIncludedCompressed) {
