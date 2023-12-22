@@ -142,4 +142,7 @@ const PORT = process.env.PORT || 2000;
 
 server.listen(PORT, (_) => {
   console.log("server running on port " + PORT);
+  console.log(
+    `database (${"Localhost"})`
+  );
 });

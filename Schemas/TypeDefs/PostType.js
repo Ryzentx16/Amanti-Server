@@ -44,8 +44,8 @@ var Post = {
       name: "AddPostInput",
       fields: {
         content: { type: new GraphQLNonNull(GraphQLString) },
-        area: { type: new GraphQLNonNull(GraphQLString) },
-        location: { type: new GraphQLNonNull(GraphQLString) },
+        area: { type: GraphQLString },
+        location: { type: GraphQLString },
         userId: { type: new GraphQLNonNull(GraphQLInt) },
         postTypes: { type: new GraphQLNonNull(GraphQLInt) },
         image: { type: GraphQLString },

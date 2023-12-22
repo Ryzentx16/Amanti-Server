@@ -24,6 +24,30 @@ const User = {
     }),
   }),
 
+  LoginType: new GraphQLObjectType({
+    name: "LoginUser",
+    fields: {
+      success: { type: GraphQLBoolean },
+      message: { type: GraphQLString },
+      result: {
+        type: new GraphQLObjectType({
+          name: "LoginType",
+          fields: {
+            id: { type: GraphQLInt },
+            firstName: { type: GraphQLString },
+            lastName: { type: GraphQLString },
+            password: { type: GraphQLString },
+            profileImage: { type: GraphQLString },
+            phoneNumber: { type: GraphQLString },
+            isOtpChecked: { type: GraphQLBoolean },
+            roleLvl: { type: GraphQLInt },
+          },
+        }),
+      },
+      errors: { type: new GraphQLList(GraphQLString) },
+    },
+  }),
+
   InputTypes: {
     Add: new GraphQLInputObjectType({
       name: "AddUserInput",
@@ -43,6 +67,7 @@ const User = {
         password: { type: GraphQLString },
         phoneNumber: { type: GraphQLString },
         profileImage: { type: GraphQLString },
+        roleLvl: { type: GraphQLInt },
       },
     }),
   },

@@ -147,6 +147,7 @@ const UserQueries = {
     ]);
 
     if (update_query_res.name === "Error") {
+      console.log(update_query_res);
       return {
         success: false,
         message: "db error",
@@ -195,13 +196,90 @@ const UserQueries = {
           password
         );
 
-        if (!passwordComparator) {
+        if (!passwordComparator || get_user_query_res[0].roleLvl < 0) {
           return null;
         }
       }
 
       return get_user_query_res;
     }
+  },
+
+  login: async (params) => {
+    errors_list = [];
+
+    console.log(`login User ${params.phoneNumber}`);
+
+    var condition = "";
+    var password = params.password;
+
+    if (Object.keys(params).length > 0) {
+      condition = " WHERE ?";
+
+      delete params.password;
+    }
+
+    var query = `SELECT * from ${shared.dbName}.Users ${condition}`;
+    var values = [params];
+
+    const login_query_res = await DataAccessLayer.SelectData(query, values);
+    if (login_query_res?.name === "Error") {
+      return {
+        success: false,
+        message: "db error",
+        errors: ["something wrong on the input"],
+      };
+    }
+
+    if (!login_query_res) {
+      return {
+        success: false,
+        message: "user not exist in db",
+        errors: [params.phoneNumber + " " + "doesn't exists"],
+      };
+    } else if (login_query_res) {
+      var passwordComparator = null;
+
+      //validate password
+      if (password) {
+        passwordComparator = vl.validation.comparePassword(
+          login_query_res[0].password,
+          password
+        );
+
+        if (!passwordComparator) {
+          console.log({
+            success: false,
+            message: "wrong password",
+            errors: ["Phone number or password incorrect"],
+          });
+          return {
+            success: false,
+            message: "wrong password",
+            errors: ["Phone number or password incorrect"],
+          };
+        }
+
+        if (!(login_query_res[0].roleLvl >= 0)) {
+          return {
+            success: false,
+            message: "access denied",
+            errors: [
+              "The entered number is blocked from using the app",
+              ...errors_list,
+            ],
+          };
+        }
+      }
+
+      return {
+        success: true,
+        message: "User login successful",
+        result: login_query_res[0],
+      };
+    }
+
+    return null;
   },
 };
 

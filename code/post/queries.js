@@ -6,7 +6,7 @@ const PostQueries = {
     var query =
       "insert into " +
       shared.dbName +
-      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,postTypes,userId) values (DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),?,?,?,?,?,?,?,?)";
+      ".Posts (createdDateTime,image,numOfComments,numOfLikes,numOfShares,content,location,area,postTypes,userId) values (DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),?,?,?,?,?,?,?,?,?)";
 
     var values = [
       params.image ? params.image : null,
@@ -15,6 +15,7 @@ const PostQueries = {
       0,
       params.content,
       params.location,
+      params.area,
       params.postTypes,
       params.userId,
     ];
@@ -174,7 +175,7 @@ const PostQueries = {
     values.push(offset);
 
     const get_post_query_res = await DataAccessLayer.SelectData(query, values);
-
+    // console.log(get_post_query_res);
     if (get_post_query_res == null || get_post_query_res.name === "Error") {
       return null;
     } else if (get_post_query_res) {

@@ -21,10 +21,126 @@ const {
   ChatRoom: ChatRoomLogic,
   ChatMessage: ChatMessageLogic,
 } = require("../code/chat");
+const DataAccessLayer = require("../code/DAL/DataAccessLayer");
+const shared = require("../code/shared/shared");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
+    getTableData: {
+      type: new GraphQLObjectType({
+        name: "TableData",
+        fields: {
+          headers: { type: new GraphQLList(GraphQLString) },
+          rows: { type: new GraphQLList(new GraphQLList(GraphQLString)) },
+        },
+      }),
+      args: {
+        dataType: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(root, args) {
+        // Implement the logic to retrieve the headers and rows
+        // based on the selected data type.
+        // ...
+        console.log("Get Table Data");
+
+        let result = [[]];
+        switch (args.dataType) {
+          case "Users":
+            var query = `SELECT * FROM ${shared.dbName}.${args.dataType}`;
+
+            //Rows
+            result.rows = (await DataAccessLayer.SelectData(query))?.map((obj) =>
+              Object.values(obj)
+            ) || [[]];
+
+            //Headers
+            result.headers = (
+              await DataAccessLayer.SelectData(
+                `SHOW COLUMNS FROM ${shared.dbName}.${args.dataType}`
+              )
+            )?.map((obj) => obj.Field) || [[]];
+
+            console.log(result);
+
+            break;
+          case "Posts":
+            var query = `SELECT * FROM ${shared.dbName}.${args.dataType}`;
+
+            //Rows
+            result.rows = (await DataAccessLayer.SelectData(query))?.map((obj) =>
+              Object.values(obj)
+            ) || [[]];
+
+            //Headers
+            result.headers = (
+              await DataAccessLayer.SelectData(
+                `SHOW COLUMNS FROM ${shared.dbName}.${args.dataType}`
+              )
+            )?.map((obj) => obj.Field) || [[]];
+
+            console.log(result);
+
+            break;
+          case "Comments":
+            var query = `SELECT * FROM ${shared.dbName}.${args.dataType}`;
+
+            //Rows
+            result.rows = (await DataAccessLayer.SelectData(query))?.map((obj) =>
+              Object.values(obj)
+            ) || [[]];
+
+            //Headers
+            result.headers = (
+              await DataAccessLayer.SelectData(
+                `SHOW COLUMNS FROM ${shared.dbName}.${args.dataType}`
+              )
+            )?.map((obj) => obj.Field) || [[]];
+
+            console.log(result);
+
+            break;
+          case "ChatRoom":
+            var query = `SELECT * FROM ${shared.dbName}.${args.dataType}`;
+
+            //Rows
+            result.rows = (await DataAccessLayer.SelectData(query))?.map((obj) =>
+              Object.values(obj)
+            ) || [[]];
+
+            //Headers
+            result.headers = (
+              await DataAccessLayer.SelectData(
+                `SHOW COLUMNS FROM ${shared.dbName}.${args.dataType}`
+              )
+            )?.map((obj) => obj.Field) || [[]];
+
+            console.log(result);
+
+            break;
+          case "ChatMessages":
+            var query = `SELECT * FROM ${shared.dbName}.${args.dataType}`;
+
+            //Rows
+            result.rows = (await DataAccessLayer.SelectData(query))?.map((obj) =>
+              Object.values(obj)
+            ) || [[]];
+
+            //Headers
+            result.headers = (
+              await DataAccessLayer.SelectData(
+                `SHOW COLUMNS FROM ${shared.dbName}.${args.dataType}`
+              )
+            )?.map((obj) => obj.Field) || [[]];
+
+            console.log(result);
+            break;
+        }
+
+        return result;
+      },
+    },
+
     user: {
       type: new GraphQLList(User.Type),
       args: {
@@ -58,7 +174,7 @@ const RootQuery = new GraphQLObjectType({
           userId,
           postFilters
         );
-
+          // console.log(result);
         return result;
       },
     },
@@ -128,8 +244,27 @@ const RootQuery = new GraphQLObjectType({
 });
 
 const Mutation = new GraphQLObjectType({
+
   name: "Mutation",
   fields: {
+    loginUser: {
+      type: User.LoginType,
+      args: {
+        phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(root, args) {
+        const req = {
+          phoneNumber: args.phoneNumber,
+          password: args.password,
+        };
+
+        console.log("Login User");
+        const result = await UserLogic.Queries.login(req);
+        return result;
+      },
+    },
+
     addUser: {
       type: User.ResultType,
       args: {
@@ -278,7 +413,7 @@ const Mutation = new GraphQLObjectType({
         return result;
       },
     },
-    deleteComment: {
+    deleteChatRoom: {
       type: Comment.ResultType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
