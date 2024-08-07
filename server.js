@@ -7,6 +7,7 @@ const schema = require("./Schemas");
 const Uploader = require("./code/utils/uploader");
 const path = require("path");
 const { ChatMessage } = require("./code/chat");
+const shared = require("./code/shared/shared");
 
 const app = express();
 
@@ -79,35 +80,40 @@ io.on("connection", (socket) => {
   });
 });
 
-app.post("/upload", Uploader.upload.single("image"), (req, res) => {
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789_";
-  let imageId = "";
+// app.post("/upload", Uploader.ftpUploadMiddleware, (req, res) => {
+//   const characters = "abcdefghijklmnopqrstuvwxyz0123456789_";
+//   let imageId = "";
 
-  for (let i = 0; i < 16; i++) {
-    imageId += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
+//   for (let i = 0; i < 16; i++) {
+//     imageId += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }
 
-  const image = req.file;
-  const typeName = req.body.typeName;
-  const isIncludedCompressed = req.body.isCompressed;
+//   const image = req.file;
+//   const typeName = req.body.typeName;
+//   const isIncludedCompressed = req.body.isCompressed;
 
-  const imageName = imageId + "_" + Date.now();
+//   const imageName = imageId + "_" + Date.now();
 
-  const compressedImageName = imageId + "_" + Date.now() + "_comp";
+//   const compressedImageName = imageId + "_" + Date.now() + "_comp";
 
-  const params = {
-    image: image,
-    imageName: imageName,
-    uploadPath: "uploads/" + typeName,
-  };
+//   const params = {
+//     image: image,
+//     imageName: imageName,
+//     uploadPath: "uploads/" + typeName,
+//   };
 
-  if (isIncludedCompressed) {
-    params.compressed = { name: compressedImageName };
-  }
+//   if (isIncludedCompressed) {
+//     params.compressed = { name: compressedImageName };
+//   }
 
-  const result = Uploader.logic(params);
+//   const result = Uploader.logic(params);
 
-  res.send(result);
+//   res.send(result);
+// });
+
+app.post("/upload", Uploader.ftpUploadMiddleware, (req, res) => {
+  console.log(req.uploadResult);
+  res.send(req.uploadResult);
 });
 
 app.get("/download/*", (req, res) => {
@@ -142,7 +148,5 @@ const PORT = process.env.PORT || 2000;
 
 server.listen(PORT, (_) => {
   console.log("server running on port " + PORT);
-  console.log(
-    `database (${"Localhost"})`
-  );
+  console.log(`database (${shared.dbName})`);
 });
