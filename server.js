@@ -131,9 +131,9 @@ app.get("/download/*", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  console.log("Welcome to the Akhlaqana server V2.0");
+  console.log("Welcome to the Amanti server V2.0");
 
-  res.send("Welcome to the Akhlaqana server");
+  res.send("Welcome to the Amanti server");
 });
 
 app.use(
@@ -144,7 +144,7 @@ app.use(
   })
 );
 
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, (_) => {
   console.log("server running on port " + PORT);
