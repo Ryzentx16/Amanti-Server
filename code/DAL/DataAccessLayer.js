@@ -2,10 +2,10 @@ const mysql = require("mysql2");
 
 // create a connection to the database
 const connection = mysql.createPool({
-  host: "193.203.184.148",
-  user: "u543580474_Admin",
+  host: "ama.ryzentx.com",
+  user: "Amanti_Admin",
   password: "Ryzentx@12m",
-  database: "u543580474_Amanti",
+  database: "ProductionDB",
 });
 
 async function makeQuery(query) {
